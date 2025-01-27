@@ -114,6 +114,7 @@ DB_USERNAME=your_username
 DB_PASSWORD=your_password
 ```
 
+
 * Pusher (WebSocket):
 ```dotenv
 
