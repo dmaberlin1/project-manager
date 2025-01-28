@@ -3,9 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ConfirmPasswordRequest;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\ResetPasswordRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
 {
@@ -15,13 +20,8 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => ['required', 'min:8', 'regex:"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$"', 'confirmed'],
-        ]);
         $user = User::create([
             'name' => $request->name,
             'email'=>$request->email,
@@ -35,7 +35,7 @@ class AuthController extends Controller
         ]);
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
         if(!Auth::attempt($request->only('email','password'))){
             return response()->json(['message'=>'Неверные учетные данные'],401);
@@ -55,9 +55,8 @@ class AuthController extends Controller
         return response()->json(['message'=>'Вы успешно вышли из системы']);
     }
 
-    public function sendResetLinkEmail(Request $request)
+    public function sendResetLinkEmail(ResetPasswordRequest $request)
     {
-        $request->validate(['email' => 'required|email']);
         $status = Password::sendResetLink($request->only('email'));
 
         return $status === Password::RESET_LINK_SENT
@@ -70,13 +69,8 @@ class AuthController extends Controller
         return view('auth.reset', ['token' => $token]);
     }
 
-    public function resetPassword(Request $request)
+    public function resetPassword(ResetPasswordRequest $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => ['required', 'min:8', 'regex:"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$"', 'confirmed'],
-            'token' => 'required'
-        ]);
 
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
@@ -92,12 +86,8 @@ class AuthController extends Controller
             : back()->withErrors(['email' => [__($status)]]);
     }
 
-    public function confirmPassword(Request $request)
+    public function confirmPassword(ConfirmPasswordRequest $request)
     {
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
-
         return response()->json(['message' => 'Пароль подтвержден']);
     }
 }

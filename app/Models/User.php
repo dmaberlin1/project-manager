@@ -60,8 +60,5 @@ class User extends Authenticatable
     {
         return $this->roles()->where('name',$role)->exists();
     }
-    public function update(User $user, Project $project)
-    {
-        return $user->hasRole('admin') || $project->user_id === $user->id;
-    }
+
 }
