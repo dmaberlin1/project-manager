@@ -14,14 +14,14 @@ class SendEmailJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $user;
+    protected $emailData;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(User $user)
+    public function __construct(array $emailData)
     {
-        $this->user=$user;
+        $this->emailData = $emailData;
     }
 
     /**
@@ -29,6 +29,8 @@ class SendEmailJob implements ShouldQueue
      */
     public function handle(): void
     {
-        Mail::to($this->user->email)->send(new \App\Mail\TaskNotification($this->user));
+       Mail::send('emails.notification',$this->emailData,function ($message){
+          $message->to($this->emailData['email'])->subject($this->emailData['subject']);
+       });
     }
 }

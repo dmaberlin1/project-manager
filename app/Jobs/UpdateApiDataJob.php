@@ -2,17 +2,20 @@
 
 namespace App\Jobs;
 
+use App\Services\OpenWeatherMapService;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Bus\Queueable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class UpdateApiDataJob implements ShouldQueue
 {
-    use Queueable;
+    use Queueable, InteractsWithQueue, SerializesModels;
 
     /**
      * Create a new job instance.
      */
-    public function __construct()
+    public function __construct(public string $location)
     {
         //
     }
@@ -22,6 +25,6 @@ class UpdateApiDataJob implements ShouldQueue
      */
     public function handle(): void
     {
-        //
+        app(OpenWeatherMapService::class)->getCurrentWeather($this->location);
     }
 }

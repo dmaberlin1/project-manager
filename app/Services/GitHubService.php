@@ -2,38 +2,28 @@
 
 namespace App\Services;
 
-use GuzzleHttp\Client;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 
 class GitHubService
 {
-    protected $client;
+    protected $apiUrl;
+    protected $apiToken;
+
 
     public function __construct()
     {
-        $this->client = new Client([
-            'base_uri' => 'https://api.github.com',
-            'headers' => [
-                'Authorization' => 'token' . env('GITHUB_PERSONAL_ACCESS_TOKEN'),
-                'Accept' => 'application/vnd.github.v3+json',
-            ],
-        ]);
+        $this->apiUrl=config('services.github.url');
+        $this->apiToken = config('services.github.token');
     }
 
-    /**
-     * Получение списка репозиториев пользователя.
-     *
-     * @param string $username
-     * @return array|null
-     */
     public function getUserRepositories(string $username): ?array
     {
-        try {
-            $response = $this->client->get('users/{$username}/repos');
-            return json_decode($response->getBody(), true);
-        } catch (\Exception $e) {
-            Log::error('Ошибка получения репозиториев: ' . $e->getMessage());
-            return null;
+        $response = Http::withToken($this->apiToken)
+            ->get("{$this->apiUrl}/users/{$username}/repos");
+
+        if ($response->failed()) {
+            throw new \Exception('Error when requesting the GitHub API');
         }
+       return $response->json();
     }
 }

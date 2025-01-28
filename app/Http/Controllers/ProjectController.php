@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\DeleteProjectJob;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -106,5 +107,15 @@ class ProjectController extends Controller
         }
         $project->delete();
         return redirect()->route('projects.index')->with('success','Проект успешно удален.');
+    }
+
+    public function deleteProjectDelayed($id)
+    {
+        $delay = now()->addMinutes(10);
+
+        // Поставить задачу на удаление проекта через 10 минут
+        DeleteProjectJob::dispatch($id)->delay($delay);
+
+        return response()->json(['message' => 'Проект будет удален через 10 минут']);
     }
 }

@@ -9,18 +9,18 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class DeleteProject implements ShouldQueue
+class DeleteProjectJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $project;
+    protected $projectId;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(Project $project)
+    public function __construct(int $projectId)
     {
-        $this->project=$project;
+        $this->projectId=$projectId;
     }
 
     /**
@@ -28,6 +28,10 @@ class DeleteProject implements ShouldQueue
      */
     public function handle(): void
     {
-        $this->project->delete();
+        $project=Project::find($this->projectId);
+
+        if($project){
+            $project->delete();
+        }
     }
 }

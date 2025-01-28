@@ -10,11 +10,12 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Queue\SerializesModels;
 
-class TaskCreated
+class TaskStatusUpdated
 {
     use InteractsWithSockets, SerializesModels;
 
     public $task;
+
     /**
      * Create a new event instance.
      */
@@ -26,19 +27,20 @@ class TaskCreated
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return Channel
+     * @return array<int, \Illuminate\Broadcasting\Channel>
      */
-    public function broadcastOn(): Channel
+    public function broadcastOn(): array
     {
-      return new PrivateChannel('projects. '.$this->task->project_id);
+        return [
+            new PrivateChannel('task.'.$this->task->id),
+        ];
     }
-
     public function broadcastWith()
     {
         return[
-            'id'=>$this->task->id,
-            'title'=>$this->task->title,
-            'assignee'=>$this->task->assignee->name,
+          'id'=>$this->task->id,
+          'title'=>$this->task->title,
+          'status'=>$this->task->status,
         ];
     }
 }
