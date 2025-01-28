@@ -16,7 +16,6 @@ class ProjectController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
     }
 
     /**
@@ -58,7 +57,7 @@ class ProjectController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ProjectAuthorizationRequest $request,Project $project)
+    public function edit(ProjectAuthorizationRequest $request, Project $project)
     {
         return view('projects.edit', compact('project'));
     }
@@ -66,7 +65,7 @@ class ProjectController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProjectRequest $request,ProjectAuthorizationRequest $authRequest, Project $project)
+    public function update(UpdateProjectRequest $request, ProjectAuthorizationRequest $authRequest, Project $project)
     {
         $project->canUpdateProject($request->all());
         return redirect()->route('projects.index')->with('success', 'Проект успешно обновлен.');
@@ -75,7 +74,7 @@ class ProjectController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ProjectAuthorizationRequest $request,Project $project)
+    public function destroy(ProjectAuthorizationRequest $request, Project $project)
     {
         $project->delete();
         return redirect()->route('projects.index')->with('success', 'Проект успешно удален.');

@@ -13,7 +13,7 @@ class StatisticsController extends Controller
 {
     public function taskStatusCount($projectId)
     {
-        $data=Cache::remember("task_status_{$projectId}",3600,function ()use($projectId){
+        $data = Cache::remember("task_status_{$projectId}", 3600, static function () use ($projectId) {
             Task::query()->selectRaw('status,COUNT(*) as count')
                 ->where('project_id', $projectId)
                 ->groupBy('status')
@@ -24,21 +24,23 @@ class StatisticsController extends Controller
 
     public function averageCompletionTime($projectId)
     {
-        $data = Task::query()->where('project_id', $projectId)
-            ->where('status', 'Done')
-            ->selectRaw('AVG(TIMESTAMPDIFF(SECOND, created_at, updated_at)) as avg_time')
-            ->first();
-
+        $data = Cache::remember("average_completion_time_${projectId}", 3600, static function () use ($projectId) {
+            return Task::query()->where('project_id', $projectId)
+                ->where('status', 'Done')
+                ->selectRaw('AVG(TIMESTAMPDIFF(SECOND, created_at, updated_at)) as avg_time')
+                ->first();
+        });
         return response()->json(['average_time' => $data->avg_time]);
     }
 
     public function topActiveUsers()
     {
-        $users = User::query()->withCount('tasks')
-            ->orderBy('tasks_count', 'desc')
-            ->take(3)
-            ->get();
-
+        $users = Cache::remember('top_active_users', 3600, function () {
+            return User::query()->withCount('tasks')
+                ->orderBy('tasks_count', 'desc')
+                ->take(3)
+                ->get();
+        });
         return response()->json($users);
     }
 

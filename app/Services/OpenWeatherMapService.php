@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 class OpenWeatherMapService
@@ -12,7 +13,7 @@ class OpenWeatherMapService
     public function __construct()
     {
         $this->apiUrl = config('services.openweather.url');
-        $this->apiKey=config('services.openweather.api_key');
+        $this->apiKey = config('services.openweather.api_key');
     }
 
     /**
@@ -23,18 +24,21 @@ class OpenWeatherMapService
      */
     public function getCurrentWeather(string $location): ?array
     {
-        $response = Http::get('https://api.openweathermap.org/data/2.5/weather', [
-            'q' => $location,
-            'appid' => $this->apiKey,
-            'units' => 'metric',  // Метрическая - цельсий
-        ]);
+        $cacheKey = "weather_{$location}";
+        //Кеш погоды на 1ч
+        return Cache::remember($cacheKey, 3600, function () use ($location) {
 
-        if ($response->failed()) {
-            throw new \Exception('Ошибка при запросе к OpenWeatherMap API');
-        }
+            $response = Http::get($this->apiUrl, [
+                'q' => $location,
+                'appid' => $this->apiKey,
+                'units' => 'metric',  // Метрическая - цельсий
+            ]);
 
-        return $response->json();
-
+            if ($response->failed()) {
+                throw new \Exception('Ошибка при запросе к OpenWeatherMap API');
+            }
+            return $response->json();
+        });
     }
 
 }

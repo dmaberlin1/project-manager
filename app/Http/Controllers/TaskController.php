@@ -16,7 +16,6 @@ class TaskController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth');
     }
 
     /**
@@ -24,7 +23,7 @@ class TaskController extends Controller
      */
     public function index(TaskAuthorizationRequest $request)
     {
-        $tasks=Task::all();
+        $tasks = Task::all();
         return view('tasks.index', compact('tasks'));
     }
 
@@ -79,7 +78,7 @@ class TaskController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(TaskAuthorizationRequest $request,Task $task)
+    public function destroy(TaskAuthorizationRequest $request, Task $task)
     {
         $task->delete();
         return redirect()->route('tasks.index')->with('success', 'Задача успешно удалена.');
