@@ -14,19 +14,13 @@ class TaskCreated
 
     public $task;
 
-    /**
-     * Create a new event instance.
-     */
+
     public function __construct(Task $task)
     {
         $this->task = $task;
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return Channel
-     */
+
     public function broadcastOn(): Channel
     {
         return new PrivateChannel('projects. ' . $this->task->project_id);

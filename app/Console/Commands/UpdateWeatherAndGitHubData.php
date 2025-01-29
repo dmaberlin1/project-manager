@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Services\GitHubService;
-use App\Services\OpenWeatherMapService;
+use App\Services\Interfaces\GitHubInterface;
+use App\Services\Interfaces\WeatherMapInterface;
 use Illuminate\Console\Command;
 
 class UpdateWeatherAndGitHubData extends Command
@@ -11,10 +11,10 @@ class UpdateWeatherAndGitHubData extends Command
     protected $signature = 'update:data';
     protected $description = 'Обновление данных из OpenWeatherMap и GitHub API';
 
-    protected $weatherService;
-    protected $githubService;
+    protected WeatherMapInterface $weatherService;
+    protected GitHubInterface $githubService;
 
-    public function __construct(OpenWeatherMapService $weatherService, GitHubService $gitHubService)
+    public function __construct(WeatherMapInterface $weatherService, GitHubInterface $gitHubService)
     {
         parent::__construct();
         $this->weatherService = $weatherService;
@@ -32,7 +32,5 @@ class UpdateWeatherAndGitHubData extends Command
         } catch (\Exception $e) {
             $this->error($e->getMessage());
         }
-
     }
-
 }

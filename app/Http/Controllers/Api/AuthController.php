@@ -7,13 +7,19 @@ use App\Http\Requests\ConfirmPasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\ResetPasswordRequest;
-use App\Models\User;
+use App\Services\Interfaces\AuthInterface;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
 {
+    protected $authService;
+
+    public function __construct(AuthInterface $authService)
+    {
+        $this->authService = $authService;
+    }
+
 
     public function showRegisterForm()
     {
@@ -22,72 +28,57 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request)
     {
-        $user = User::create([
-            'name' => $request->name,
-            'email'=>$request->email,
-            'password'=>bcrypt($request->password),
-        ]);
-        $token=$user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'access_token'=>$token,
-            'token_type'=>'Bearer'
-        ]);
+        $data = $this->authService->register($request->all());
+        return response()->json($data);
     }
+
 
     public function login(LoginRequest $request)
     {
-        if(!Auth::attempt($request->only('email','password'))){
-            return response()->json(['message'=>'Неверные учетные данные'],401);
+        try {
+            $data = $this->authService->login($request->only('email', 'password'));
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 401);
         }
-        $user=User::query()->where('email',$request->email)->firstOrFail();
-        $token=$user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'access_token'=>$token,
-            'token_type'=>'Bearer',
-        ]);
     }
 
     public function logout(Request $request)
     {
-        $request->user()->tokens()->delete();
-        return response()->json(['message'=>'Вы успешно вышли из системы']);
+        $this->authService->logout($request->user());
+        return response()->json(['message' => 'Вы успешно вышли из системы']);
     }
+
 
     public function sendResetLinkEmail(ResetPasswordRequest $request)
     {
-        $status = Password::sendResetLink($request->only('email'));
+        $status = $this->authService->sendPasswordResetLink($request->email);
 
         return $status === Password::RESET_LINK_SENT
             ? back()->with(['status' => __($status)])
             : back()->withErrors(['email' => __($status)]);
     }
 
+
     public function showResetForm($token)
     {
-        return view('auth.reset', ['token' => $token]);
+        return view('auth.passwords.reset', ['token' => $token]);
     }
+
 
     public function resetPassword(ResetPasswordRequest $request)
     {
-
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password)
-                ])->save();
-            }
-        );
+        $status = $this->authService->resetPassword($request->all());
 
         return $status === Password::PASSWORD_RESET
             ? redirect()->route('login')->with('status', __($status))
             : back()->withErrors(['email' => [__($status)]]);
     }
 
+
     public function confirmPassword(ConfirmPasswordRequest $request)
     {
-        return response()->json(['message' => 'Пароль подтвержден']);
+        $message = $this->authService->confirmPassword($request->password);
+        return response()->json(['message' => $message]);
     }
 }

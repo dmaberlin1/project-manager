@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Mail\NotificationEmail;
+use App\Services\Interfaces\MailInterface;
 use Illuminate\Support\Facades\Mail;
 
 class MailService implements MailInterface

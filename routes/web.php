@@ -10,7 +10,6 @@ use App\Http\Controllers\Internal\TaskController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Horizon\Http\Controllers\HomeController;
 
-
 // Открытые маршруты для регистрации и входа
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('auth.register');
 Route::post('/register', [AuthController::class, 'register'])->name('auth.register.submit');
@@ -24,27 +23,30 @@ Route::prefix('password')->group(function () {
     Route::post('/confirm', [AuthController::class, 'confirmPassword'])->middleware('auth:sanctum');
 });
 
-
 Route::middleware('auth:sanctum')->group(function () {
-    // Логика выхода из системы
+// Логика выхода из системы
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    // Статистика по задачам
+// Статистика по задачам
     Route::prefix('statistics')->group(function () {
         Route::get('/tasks-status/{projectId}', [StatisticsController::class, 'taskStatusCount']);
         Route::get('/average-completion/{projectId}', [StatisticsController::class, 'averageTaskCompletionTime']);
         Route::get('/top-users', [StatisticsController::class, 'topActiveUsers']);
-        Route::get('/export/{projectId}', [StatisticsController::class, 'exportTaskStatusToCsv'])->whereNumber('projectId');
+
+        Route::get('/tasks/export/csv/{projectId}', [TaskController::class, 'exportCsv'])
+            ->name('tasks.export.csv')->whereNumber('projectId');
+        Route::get('/tasks/export/json/{projectId}', [TaskController::class, 'exportJson'])
+            ->name('tasks.export.json')->whereNumber('projectId');
     });
 
-    // Маршруты для проектов и задач
+// Маршруты для проектов и задач
     Route::resource('projects', ProjectController::class);
     Route::resource('tasks', TaskController::class);
 
-    // Отправка уведомлений
+// Отправка уведомлений
     Route::post('/notifications/send', [NotificationController::class, 'sendNotifications']);
 
-    // Удаление проектов с задержкой
+// Удаление проектов с задержкой
     Route::delete('/projects/{id}/delayed', [ProjectController::class, 'deleteProjectDelayed'])->whereNumber('id');
 });
 

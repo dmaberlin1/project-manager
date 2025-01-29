@@ -3,9 +3,10 @@
 namespace App\Services;
 
 use App\Exceptions\OpenWeatherException;
+use App\Services\Interfaces\WeatherMapInterface;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Http\Client\RequestException;
 
 class OpenWeatherMapService implements WeatherMapInterface
 {
@@ -21,13 +22,12 @@ class OpenWeatherMapService implements WeatherMapInterface
     public function getCurrentWeather(string $location): ?array
     {
         $cacheKey = "weather_{$location}";
-        // Кешируем погоду на 1 час
         return Cache::remember($cacheKey, 3600, function () use ($location) {
             try {
                 $response = Http::get($this->apiUrl, [
                     'q' => $location,
                     'appid' => $this->apiKey,
-                    'units' => 'metric',  // Метрическая система - цельсий
+                    'units' => 'metric',
                 ]);
 
 

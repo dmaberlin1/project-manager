@@ -53,7 +53,7 @@ npm install
 
 ```bash
 cp .env.example .env
-````
+```
 
 ### 🐳 Використання Docker Compose
 
@@ -127,7 +127,7 @@ REDIS_USER_PASSWORD=your_redis_user_password
 * Підключення до бази даних:
 
 ```dotenv
-DB_CONNECTION=mysql
+DB_CONNECTION=postgresql
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=project_manager_db
@@ -218,7 +218,7 @@ php artisan serve
 * Кількість завдань за статусами.
 * Середній час виконання завдань.
 * Топ-3 найактивніших користувачів.
-* Експорт у JSON, CSV, Excel.
+* Експорт у JSON, CSV.
 
 ### 🔍 Моніторинг та логування
 

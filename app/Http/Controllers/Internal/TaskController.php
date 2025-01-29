@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Internal;
 
 use App\Events\TaskCreated;
+use App\Exports\TaskStatusExport;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ExportTaskRequest;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\TaskAuthorizationRequest;
 use App\Http\Requests\UpdateTaskRequest;
@@ -16,6 +18,7 @@ class TaskController extends Controller
     public function __construct()
     {
     }
+
 
     /**
      * Display a listing of the resource.
@@ -81,5 +84,17 @@ class TaskController extends Controller
     {
         $task->delete();
         return redirect()->route('tasks.index')->with('success', 'Задача успешно удалена.');
+    }
+
+    public function exportCsv(ExportTaskRequest $request, $projectId)
+    {
+        $export = new TaskStatusExport($projectId);
+        return $export->exportCsv();
+    }
+
+    public function exportJson(ExportTaskRequest $request, $projectId)
+    {
+        $export = new TaskStatusExport($projectId);
+        return $export->exportJson();
     }
 }

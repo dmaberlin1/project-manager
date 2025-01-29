@@ -15,7 +15,7 @@
         "laravel/telescope": "^5.3",
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.6",
-        "maatwebsite/excel": "^1.1",
+        "phpoffice/phpspreadsheet": "^3.9",
         "predis/predis": "^2.3",
         "pusher/pusher-php-server": "^7.2",
         "symfony/http-kernel": "^7.2"

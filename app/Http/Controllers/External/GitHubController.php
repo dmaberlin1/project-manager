@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\External;
 
 use App\Http\Controllers\Controller;
-use App\Services\GitHubInterface;
+use App\Services\Interfaces\GitHubInterface;
 
 class GitHubController extends Controller
 {

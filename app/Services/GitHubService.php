@@ -3,10 +3,11 @@
 namespace App\Services;
 
 use App\Exceptions\GitHubException;
+use App\Services\Interfaces\GitHubInterface;
 use Exception;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Http\Client\RequestException;
 
 class GitHubService implements GitHubInterface
 {
@@ -23,7 +24,6 @@ class GitHubService implements GitHubInterface
     {
         $cacheKey = "github_repositories_{$username}";
 
-        // Кешируем ответ GitHub API на 1 час
         return Cache::remember($cacheKey, 3600, function () use ($username) {
             try {
                 $response = Http::withToken($this->apiToken)
