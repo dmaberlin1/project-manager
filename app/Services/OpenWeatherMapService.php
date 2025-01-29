@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-use App\Exception\OpenWeatherException;
+use App\Exceptions\OpenWeatherException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
-class OpenWeatherMapService
+class OpenWeatherMapService implements WeatherMapInterface
 {
     private string $apiUrl;
     private string $apiKey;
@@ -26,13 +26,13 @@ class OpenWeatherMapService
     public function getCurrentWeather(string $location): ?array
     {
         $cacheKey = "weather_{$location}";
-        //Кеш погоды на 1ч
+// Кешируем погоду на 1 час
         return Cache::remember($cacheKey, 3600, function () use ($location) {
             try {
                 $response = Http::get($this->apiUrl, [
                     'q' => $location,
                     'appid' => $this->apiKey,
-                    'units' => 'metric',  // Метрическая - цельсий
+                    'units' => 'metric',  // Метрическая система - цельсий
                 ]);
 
                 if ($response->failed()) {
@@ -43,11 +43,11 @@ class OpenWeatherMapService
                 if (!isset($data['name'], $data['main']['temp'], $data['weather'][0]['description'])) {
                     throw OpenWeatherException::responseError();
                 }
+
                 return $data;
             } catch (\Exception $e) {
                 throw new OpenWeatherException('Ошибка при получении данных о погоде', 0, $e);
             }
         });
     }
-
 }

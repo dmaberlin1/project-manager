@@ -17,7 +17,8 @@
         "laravel/ui": "^4.6",
         "maatwebsite/excel": "^1.1",
         "predis/predis": "^2.3",
-        "pusher/pusher-php-server": "^7.2"
+        "pusher/pusher-php-server": "^7.2",
+        "symfony/http-kernel": "^7.2"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

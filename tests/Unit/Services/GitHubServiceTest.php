@@ -3,7 +3,7 @@
 namespace Tests\Unit\Services;
 
 use App\Services\GitHubService;
-use App\Exception\GitHubException;
+use App\Exceptions\GitHubException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;

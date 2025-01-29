@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\GitHubInterface;
 use App\Services\GitHubService;
 use Illuminate\Http\Request;
 
 class GitHubController extends Controller
 {
-    protected $githubService;
+    protected GitHubInterface $githubService;
 
-    public function __construct(GitHubService $gitHubService)
+    public function __construct(GitHubInterface $gitHubService)
     {
         $this->githubService = $gitHubService;
     }

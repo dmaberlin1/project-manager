@@ -18,11 +18,11 @@ return [
         'token' => env('POSTMARK_TOKEN'),
     ],
     'openweather' => [
-        'api_key' => env('OPENWEATHER_API_KEY'),
+        'api_key' => env('OPENWEATHERMAP_API_KEY'),
         'url' => 'https://api.openweathermap.org/data/2.5/weather',
     ],
     'github' => [
-        'token' => env('GITHUB_API_TOKEN'),
+        'token' => env('GITHUB_PERSONAL_ACCESS_TOKEN'),
         'url' => 'https://api.github.com',
     ],
     'ses' => [

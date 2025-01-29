@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Exceptions;
 
-use App\Exception\OpenWeatherException;
+use App\Exceptions\OpenWeatherException;
 use PHPUnit\Framework\TestCase;
 
 class OpenWeatherExceptionTest extends TestCase

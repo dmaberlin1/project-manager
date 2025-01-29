@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
-use App\Exception\GitHubException;
+use App\Exceptions\GitHubException;
 use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
-class GitHubService
+class GitHubService implements GitHubInterface
 {
     private string $apiUrl;
     private string $apiToken;

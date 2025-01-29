@@ -12,9 +12,9 @@ use Laravel\Horizon\Http\Controllers\HomeController;
 
 
 // Открытые маршруты для регистрации и входа
-Route::get('/register', [AuthController::class, 'showRegisterForm']);
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('auth.register');
+Route::post('/register', [AuthController::class, 'register'])->name('auth.register.submit');
+Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
 
 // Маршруты для сброса пароля
 Route::prefix('password')->group(function () {

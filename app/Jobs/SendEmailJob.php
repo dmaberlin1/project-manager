@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\User;
+use App\Services\MailInterface;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -15,13 +16,15 @@ class SendEmailJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $emailData;
+    protected MailInterface $mailService;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(array $emailData)
+    public function __construct(array $emailData, MailInterface $mailService)
     {
         $this->emailData = $emailData;
+        $this->mailService = $mailService;
     }
 
     /**
@@ -29,8 +32,6 @@ class SendEmailJob implements ShouldQueue
      */
     public function handle(): void
     {
-       Mail::send('emails.notification',$this->emailData,function ($message){
-          $message->to($this->emailData['email'])->subject($this->emailData['subject']);
-       });
+        $this->mailService->send($this->emailData);
     }
 }

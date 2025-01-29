@@ -3,11 +3,8 @@
 namespace App\Events;
 
 use App\Models\Task;
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Queue\SerializesModels;
 
 class TaskStatusUpdated
@@ -21,7 +18,7 @@ class TaskStatusUpdated
      */
     public function __construct(Task $task)
     {
-        $this->task=$task;
+        $this->task = $task;
     }
 
     /**
@@ -32,15 +29,16 @@ class TaskStatusUpdated
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('task.'.$this->task->id),
+            new PrivateChannel('task.' . $this->task->id),
         ];
     }
+
     public function broadcastWith()
     {
-        return[
-          'id'=>$this->task->id,
-          'title'=>$this->task->title,
-          'status'=>$this->task->status,
+        return [
+            'id' => $this->task->id,
+            'title' => $this->task->title,
+            'status' => $this->task->status,
         ];
     }
 }
