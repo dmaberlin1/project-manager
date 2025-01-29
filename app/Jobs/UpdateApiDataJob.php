@@ -23,8 +23,8 @@ class UpdateApiDataJob implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle(OpenWeatherMapService $weatherMapService): void
     {
-        app(OpenWeatherMapService::class)->getCurrentWeather($this->location);
+        $weatherMapService->getCurrentWeather($this->location);
     }
 }

@@ -2,18 +2,19 @@
 
 namespace App\Services;
 
+use App\Exception\OpenWeatherException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 class OpenWeatherMapService
 {
-    protected $apiUrl;
-    protected $apiKey;
+    private string $apiUrl;
+    private string $apiKey;
 
-    public function __construct()
+    public function __construct(string $apiKey, string $apiUrl)
     {
-        $this->apiUrl = config('services.openweather.url');
-        $this->apiKey = config('services.openweather.api_key');
+        $this->apiUrl = $apiUrl;
+        $this->apiKey = $apiKey;
     }
 
     /**
@@ -27,17 +28,25 @@ class OpenWeatherMapService
         $cacheKey = "weather_{$location}";
         //Кеш погоды на 1ч
         return Cache::remember($cacheKey, 3600, function () use ($location) {
+            try {
+                $response = Http::get($this->apiUrl, [
+                    'q' => $location,
+                    'appid' => $this->apiKey,
+                    'units' => 'metric',  // Метрическая - цельсий
+                ]);
 
-            $response = Http::get($this->apiUrl, [
-                'q' => $location,
-                'appid' => $this->apiKey,
-                'units' => 'metric',  // Метрическая - цельсий
-            ]);
+                if ($response->failed()) {
+                    throw OpenWeatherException::requestError();
+                }
 
-            if ($response->failed()) {
-                throw new \Exception('Ошибка при запросе к OpenWeatherMap API');
+                $data = $response->json();
+                if (!isset($data['name'], $data['main']['temp'], $data['weather'][0]['description'])) {
+                    throw OpenWeatherException::responseError();
+                }
+                return $data;
+            } catch (\Exception $e) {
+                throw new OpenWeatherException('Ошибка при получении данных о погоде', 0, $e);
             }
-            return $response->json();
         });
     }
 

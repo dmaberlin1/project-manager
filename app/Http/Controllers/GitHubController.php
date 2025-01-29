@@ -17,10 +17,10 @@ class GitHubController extends Controller
     public function show(string $username)
     {
         try {
-            $repos=$this->githubService->getUserRepositories($username);
+            $repos = $this->githubService->getUserRepositories($username);
             return response()->json($repos);
-        }catch (\Exception $e){
-            return response()->json(['error'=>$e->getMessage()],500);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 }

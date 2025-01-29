@@ -17,7 +17,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 // Маршруты для сброса пароля
-Route::prefix('password')->group(function (){
+Route::prefix('password')->group(function () {
     Route::get('/reset/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
     Route::post('/email', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
     Route::post('/reset', [AuthController::class, 'resetPassword'])->name('password.update');
@@ -30,11 +30,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     // Статистика по задачам
-    Route::prefix('statistics')->group(function (){
+    Route::prefix('statistics')->group(function () {
         Route::get('/tasks-status/{projectId}', [StatisticsController::class, 'taskStatusCount']);
         Route::get('/average-completion/{projectId}', [StatisticsController::class, 'averageTaskCompletionTime']);
         Route::get('/top-users', [StatisticsController::class, 'topActiveUsers']);
-        Route::get('/export/{projectId}', [StatisticsController::class, 'exportTaskStatusToCsv']);
+        Route::get('/export/{projectId}', [StatisticsController::class, 'exportTaskStatusToCsv'])->whereNumber('projectId');
     });
 
     // Маршруты для проектов и задач
@@ -45,12 +45,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/notifications/send', [NotificationController::class, 'sendNotifications']);
 
     // Удаление проектов с задержкой
-    Route::delete('/projects/{id}/delayed', [ProjectController::class, 'deleteProjectDelayed']);
+    Route::delete('/projects/{id}/delayed', [ProjectController::class, 'deleteProjectDelayed'])->whereNumber('id');
 });
 
 // Horizon с дополнительным middleware для админов
 Route::get('/horizon', [HomeController::class, 'index'])->middleware(['auth:sanctum', 'admin']);
 
 // Открытые маршруты для погоды и GitHub
-Route::get('/weather/{location}', [WeatherController::class, 'show']);
-Route::get('/github/{username}', [GitHubController::class, 'show']);
+Route::get('/weather/{location}', [WeatherController::class, 'show'])->where('location', '[A-Za-z]+');
+Route::get('/github/{username}', [GitHubController::class, 'show'])->where('username', '[A-Za-z0-9\-]+');
