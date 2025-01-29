@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Exceptions\OpenWeatherException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Client\RequestException;
 
 class OpenWeatherMapService implements WeatherMapInterface
 {
@@ -17,16 +18,10 @@ class OpenWeatherMapService implements WeatherMapInterface
         $this->apiKey = $apiKey;
     }
 
-    /**
-     * Получение текущей погоды для указанного местоположения.
-     *
-     * @param string $location
-     * @return array|null
-     */
     public function getCurrentWeather(string $location): ?array
     {
         $cacheKey = "weather_{$location}";
-// Кешируем погоду на 1 час
+        // Кешируем погоду на 1 час
         return Cache::remember($cacheKey, 3600, function () use ($location) {
             try {
                 $response = Http::get($this->apiUrl, [
@@ -35,18 +30,25 @@ class OpenWeatherMapService implements WeatherMapInterface
                     'units' => 'metric',  // Метрическая система - цельсий
                 ]);
 
+
                 if ($response->failed()) {
-                    throw OpenWeatherException::requestError();
+
+                    $statusCode = $response->status();
+                    $errorMessage = $response->json('message', 'Неизвестная ошибка');
+                    throw OpenWeatherException::requestError($statusCode, $errorMessage);
                 }
 
                 $data = $response->json();
+
                 if (!isset($data['name'], $data['main']['temp'], $data['weather'][0]['description'])) {
                     throw OpenWeatherException::responseError();
                 }
 
                 return $data;
+            } catch (RequestException $e) {
+                throw new OpenWeatherException('Ошибка при запросе данных о погоде: ' . $e->getMessage(), 0, $e);
             } catch (\Exception $e) {
-                throw new OpenWeatherException('Ошибка при получении данных о погоде', 0, $e);
+                throw new OpenWeatherException('Ошибка при получении данных о погоде: ' . $e->getMessage(), 0, $e);
             }
         });
     }

@@ -1,16 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Internal;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectAuthorizationRequest;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Jobs\DeleteProjectJob;
 use App\Models\Project;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Services\OpenWeatherMapService;
-use App\Services\GitHubService;
 
 class ProjectController extends Controller
 {
@@ -21,10 +18,9 @@ class ProjectController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(ProjectAuthorizationRequest $request, OpenWeatherMapService $weatherService, GitHubService $githubService)
+    public function index(ProjectAuthorizationRequest $request)
     {
-        // Получаем проекты, доступные текущему пользователю
-        $projects = Project::all();
+        $projects = Project::where('user_id', auth()->id())->get();
         return view('projects.index', compact('projects'));
     }
 
@@ -41,8 +37,7 @@ class ProjectController extends Controller
      */
     public function store(StoreProjectRequest $request)
     {
-        $project = Project::create($request->validated());
-
+        Project::create($request->validated());
         return redirect()->route('projects.index')->with('success', 'Проект успешно создан.');
     }
 
@@ -83,10 +78,8 @@ class ProjectController extends Controller
     public function deleteProjectDelayed($id)
     {
         $delay = now()->addMinutes(10);
-
-        // Поставить задачу на удаление проекта через 10 минут
+        // Поставить задачу на удаление проекта через 10 мин
         DeleteProjectJob::dispatch($id)->delay($delay);
-
         return response()->json(['message' => 'Проект будет удален через 10 минут']);
     }
 }

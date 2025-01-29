@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\External;
 
 use App\Exceptions\OpenWeatherException;
+use App\Http\Controllers\Controller;
 use App\Services\WeatherMapInterface;
 
 class WeatherController extends Controller

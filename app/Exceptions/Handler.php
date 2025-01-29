@@ -19,7 +19,6 @@ class Handler extends ExceptionHandler
 
     public function report(Throwable $exception)
     {
-        // Логируем только один раз, используя метод buildLogContext
         if ($this->shouldReport($exception)) {
             Log::error('Произошла ошибка:', $this->buildLogContext($exception));
         }

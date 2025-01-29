@@ -2,11 +2,11 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\StatisticsController;
-use App\Http\Controllers\GitHubController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\ProjectController;
-use App\Http\Controllers\TaskController;
-use App\Http\Controllers\WeatherController;
+use App\Http\Controllers\External\GitHubController;
+use App\Http\Controllers\External\WeatherController;
+use App\Http\Controllers\Internal\NotificationController;
+use App\Http\Controllers\Internal\ProjectController;
+use App\Http\Controllers\Internal\TaskController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Horizon\Http\Controllers\HomeController;
 

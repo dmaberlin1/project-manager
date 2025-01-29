@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\External;
 
+use App\Http\Controllers\Controller;
 use App\Services\GitHubInterface;
-use App\Services\GitHubService;
-use Illuminate\Http\Request;
 
 class GitHubController extends Controller
 {

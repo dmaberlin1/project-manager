@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Internal;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\SendNotificationRequest;
 use App\Jobs\SendEmailJob;
 use App\Models\User;
-use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
