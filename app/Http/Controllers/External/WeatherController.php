@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\External;
 
-use App\Exceptions\OpenWeatherException;
+use App\Exceptions\WeatherException;
 use App\Http\Controllers\Controller;
 use App\Services\Interfaces\WeatherMapInterface;
 
@@ -24,13 +24,17 @@ class WeatherController extends Controller
                 'temperature' => $weather['main']['temp'],
                 'description' => $weather['weather'][0]['description'],
             ]);
-        } catch (OpenWeatherException $e) {
+        } catch (WeatherException $e) {
             return response()->json([
                 'error' => $e->getMessage(),
-                'code' => $e->getCode(),
-            ]);
+                'code' => $e->getCode() ?: 400,
+                'details' => $e->getTraceAsString(),
+            ], 400);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()]);
+            return response()->json([
+                'error' => $e->getMessage(),
+                'code' => 500
+            ], 500);
         }
     }
 }

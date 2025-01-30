@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Exceptions\OpenWeatherException;
+use App\Exceptions\WeatherException;
 use App\Services\Interfaces\WeatherMapInterface;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Cache;
@@ -35,20 +35,20 @@ class OpenWeatherMapService implements WeatherMapInterface
 
                     $statusCode = $response->status();
                     $errorMessage = $response->json('message', 'Неизвестная ошибка');
-                    throw OpenWeatherException::requestError($statusCode, $errorMessage);
+                    throw WeatherException::requestError($statusCode, $errorMessage);
                 }
 
                 $data = $response->json();
 
                 if (!isset($data['name'], $data['main']['temp'], $data['weather'][0]['description'])) {
-                    throw OpenWeatherException::responseError();
+                    throw WeatherException::responseError();
                 }
 
                 return $data;
             } catch (RequestException $e) {
-                throw new OpenWeatherException('Ошибка при запросе данных о погоде: ' . $e->getMessage(), 0, $e);
+                throw new WeatherException('Ошибка при запросе данных о погоде: ' . $e->getMessage(), 0, $e);
             } catch (\Exception $e) {
-                throw new OpenWeatherException('Ошибка при получении данных о погоде: ' . $e->getMessage(), 0, $e);
+                throw new WeatherException('Ошибка при получении данных о погоде: ' . $e->getMessage(), 0, $e);
             }
         });
     }

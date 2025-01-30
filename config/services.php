@@ -19,11 +19,11 @@ return [
     ],
     'openweather' => [
         'api_key' => env('OPENWEATHERMAP_API_KEY'),
-        'url' => 'https://api.openweathermap.org/data/2.5/weather',
+        'url' => env('OPENWEATHERMAP_API_URL'),
     ],
     'github' => [
         'token' => env('GITHUB_PERSONAL_ACCESS_TOKEN'),
-        'url' => 'https://api.github.com',
+        'url' => env('GITHUB_PERSONAL_URL'),
     ],
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
