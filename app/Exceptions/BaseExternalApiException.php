@@ -22,12 +22,12 @@ class BaseExternalApiException extends Exception
         ]);
     }
 
-    public static function requestError(string $message, ?Exception $previous)
+    public static function requestError(string $message, ?Exception $previous): static
     {
         return new static ($message, self::REQUEST_ERROR, $previous);
     }
 
-    public static function responseError(string $message, ?Exception $previous)
+    public static function responseError(string $message, ?Exception $previous): static
     {
         return new static ($message, self::RESPONSE_ERROR, $previous);
     }

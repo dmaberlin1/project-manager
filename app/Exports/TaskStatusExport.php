@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Task;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Response;
 
 class TaskStatusExport
@@ -14,7 +15,7 @@ class TaskStatusExport
         $this->projectId = $projectId;
     }
 
-    public function exportCsv()
+    public function exportCsv(): \Illuminate\Http\Response
     {
         $tasks = Task::select('status', \DB::raw('COUNT(*) as count'))
             ->where('project_id', $this->projectId)
@@ -41,7 +42,7 @@ class TaskStatusExport
         ]);
     }
 
-    public function exportJson()
+    public function exportJson(): JsonResponse
     {
         $tasks = Task::select('status', \DB::raw('COUNT(*) as count'))
             ->where('project_id', $this->projectId)

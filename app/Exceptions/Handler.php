@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Http\JsonResponse;
 use Throwable;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Log;
@@ -17,7 +18,7 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
-    public function report(Throwable $exception)
+    public function report(Throwable $exception): void
     {
         if ($this->shouldReport($exception)) {
             Log::error('Произошла ошибка:', $this->buildLogContext($exception));
@@ -26,7 +27,7 @@ class Handler extends ExceptionHandler
         parent::report($exception);
     }
 
-    public function render($request, Throwable $exception)
+    public function render($request, Throwable $exception): JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
         $statusCode = $exception instanceof HttpException
             ? $exception->getStatusCode()

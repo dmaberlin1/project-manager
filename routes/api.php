@@ -25,30 +25,33 @@ Route::prefix('api')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout'])->name('api.auth.logout');
 
-        // 📊 API-маршруты статистики
         Route::prefix('statistics')->group(function () {
             Route::get('/tasks-status/{projectId}', [StatisticsController::class, 'taskStatusCount']);
-            Route::get('/average-completion/{projectId}', [StatisticsController::class, 'averageTaskCompletionTime']);
+            Route::get('/average-completion/{projectId}', [StatisticsController::class, 'averageCompletionTime']);
             Route::get('/top-users', [StatisticsController::class, 'topActiveUsers']);
-
-            // 📥 Экспорт задач
-            Route::get('/tasks/export/csv/{projectId}', [TaskController::class, 'exportCsv'])->whereNumber('projectId');
-            Route::get('/tasks/export/json/{projectId}', [TaskController::class, 'exportJson'])->whereNumber('projectId');
         });
 
-        // 📌 API для проектов и задач
-        Route::apiResource('projects', ProjectController::class);
+        // 📥 API-экспорт задач
+        Route::get('/tasks/export/csv/{projectId}', [TaskController::class, 'exportCsv'])->whereNumber('projectId');
+        Route::get('/tasks/export/json/{projectId}', [TaskController::class, 'exportJson'])->whereNumber('projectId');
+
+        // 📌 API для задач
         Route::apiResource('tasks', TaskController::class);
-
-        // 📢 API для уведомлений
-        Route::post('/notifications/send', [NotificationController::class, 'sendNotifications']);
-
-        // ⏳ API для удаления проектов с задержкой
-        Route::delete('/projects/{id}/delayed', [ProjectController::class, 'deleteProjectDelayed'])->whereNumber('id');
     });
 
-    // Horizon API (только для админов)
-    Route::get('/horizon', function () {
-        return response()->json(['message' => 'Horizon доступен только для администраторов.']);
-    })->middleware(['auth:sanctum', 'admin']);
+    // 📌 API для проектов и задач
+    Route::apiResource('projects', ProjectController::class);
+    Route::apiResource('tasks', TaskController::class);
+
+    // 📢 API для уведомлений
+    Route::post('/notifications/send', [NotificationController::class, 'sendNotifications']);
+
+    // ⏳ API для удаления проектов с задержкой
+    Route::delete('/projects/{id}/delayed', [ProjectController::class, 'deleteProjectDelayed'])->whereNumber('id');
 });
+
+// Horizon API (только для админов)
+Route::get('/horizon', function () {
+    return response()->json(['message' => 'Horizon доступен только для администраторов.']);
+})->middleware(['auth:sanctum', 'admin']);
+

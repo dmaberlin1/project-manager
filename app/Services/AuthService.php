@@ -26,7 +26,7 @@ class AuthService implements AuthInterface
         ];
     }
 
-    public function login(array $credentials)
+    public function login(array $credentials): array
     {
         if (!Auth::attempt($credentials)) {
             throw new \RuntimeException('Неверные учетные данные');

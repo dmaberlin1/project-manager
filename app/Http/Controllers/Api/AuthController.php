@@ -8,6 +8,7 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Services\Interfaces\AuthInterface;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 
@@ -20,13 +21,13 @@ class AuthController extends Controller
         $this->authService = $authService;
     }
 
-    public function register(RegisterRequest $request)
+    public function register(RegisterRequest $request): JsonResponse
     {
         $data = $this->authService->register($request->validated());
         return response()->json($data);
     }
 
-    public function login(LoginRequest $request)
+    public function login(LoginRequest $request): ?JsonResponse
     {
         try {
             $data = $this->authService->login($request->only('email', 'password'));
@@ -36,19 +37,19 @@ class AuthController extends Controller
         }
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request): JsonResponse
     {
         $this->authService->logout($request->user());
         return response()->json(['message' => 'Вы успешно вышли из системы']);
     }
 
-    public function sendResetLinkEmail(ResetPasswordRequest $request)
+    public function sendResetLinkEmail(ResetPasswordRequest $request): JsonResponse
     {
         $status = $this->authService->sendPasswordResetLink($request->email);
         return response()->json(['message' => __($status)], $status === Password::RESET_LINK_SENT ? 200 : 400);
     }
 
-    public function resetPassword(ResetPasswordRequest $request)
+    public function resetPassword(ResetPasswordRequest $request): JsonResponse
     {
         $status = $this->authService->resetPassword($request->validated());
 
@@ -57,7 +58,7 @@ class AuthController extends Controller
         ], $status === Password::PASSWORD_RESET ? 200 : 400);
     }
 
-    public function confirmPassword(ConfirmPasswordRequest $request)
+    public function confirmPassword(ConfirmPasswordRequest $request): JsonResponse
     {
         $message = $this->authService->confirmPassword($request->password);
         return response()->json(['message' => $message]);

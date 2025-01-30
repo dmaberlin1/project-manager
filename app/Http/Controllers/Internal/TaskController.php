@@ -11,90 +11,63 @@ use App\Http\Requests\TaskAuthorizationRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Project;
 use App\Models\Task;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class TaskController extends Controller
 {
-
-    public function __construct()
-    {
-    }
-
-
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(TaskAuthorizationRequest $request)
+    public function index(TaskAuthorizationRequest $request): View
     {
         $tasks = Task::all();
         return view('tasks.index', compact('tasks'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): View
     {
         $projects = Project::all();
         return view('tasks.create', compact('projects'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreTaskRequest $request)
+    public function store(StoreTaskRequest $request): RedirectResponse
     {
         $task = Task::create($request->validated());
 
-        // Вызов события
         broadcast(new TaskCreated($task))->toOthers();
 
         return redirect()->route('tasks.index')->with('success', 'Задача успешно создана.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(TaskAuthorizationRequest $request, Task $task)
+    public function show(TaskAuthorizationRequest $request, Task $task): View
     {
         return view('tasks.show', compact('task'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(TaskAuthorizationRequest $request, Task $task)
+    public function edit(TaskAuthorizationRequest $request, Task $task): View
     {
         $projects = Project::all();
         return view('tasks.edit', compact('task', 'projects'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateTaskRequest $request, Task $task)
+    public function update(UpdateTaskRequest $request, Task $task): RedirectResponse
     {
-        $task->canUpdateProject($request->validated());
+        $task->update($request->validated());
         return redirect()->route('tasks.index')->with('success', 'Задача успешно обновлена.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(TaskAuthorizationRequest $request, Task $task)
+    public function destroy(TaskAuthorizationRequest $request, Task $task): RedirectResponse
     {
         $task->delete();
         return redirect()->route('tasks.index')->with('success', 'Задача успешно удалена.');
     }
 
-    public function exportCsv(ExportTaskRequest $request, $projectId)
+    public function exportCsv(ExportTaskRequest $request, int $projectId)
     {
-        $export = new TaskStatusExport($projectId);
-        return $export->exportCsv();
+        return (new TaskStatusExport($projectId))->download('task_status.csv');
     }
 
-    public function exportJson(ExportTaskRequest $request, $projectId)
+    public function exportJson(ExportTaskRequest $request, int $projectId): JsonResponse
     {
-        $export = new TaskStatusExport($projectId);
-        return $export->exportJson();
+        return (new TaskStatusExport($projectId))->exportJson();
     }
 }

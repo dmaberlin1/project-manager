@@ -13,7 +13,7 @@ class SendEmailJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $emailData;
+    protected array $emailData;
     protected MailInterface $mailService;
 
     /**
