@@ -13,25 +13,18 @@ use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
 {
-    protected $authService;
+    private AuthInterface $authService;
 
     public function __construct(AuthInterface $authService)
     {
         $this->authService = $authService;
     }
 
-
-    public function showRegisterForm()
-    {
-        return view('auth.register');
-    }
-
     public function register(RegisterRequest $request)
     {
-        $data = $this->authService->register($request->all());
+        $data = $this->authService->register($request->validated());
         return response()->json($data);
     }
-
 
     public function login(LoginRequest $request)
     {
@@ -49,32 +42,20 @@ class AuthController extends Controller
         return response()->json(['message' => 'Вы успешно вышли из системы']);
     }
 
-
     public function sendResetLinkEmail(ResetPasswordRequest $request)
     {
         $status = $this->authService->sendPasswordResetLink($request->email);
-
-        return $status === Password::RESET_LINK_SENT
-            ? back()->with(['status' => __($status)])
-            : back()->withErrors(['email' => __($status)]);
+        return response()->json(['message' => __($status)], $status === Password::RESET_LINK_SENT ? 200 : 400);
     }
-
-
-    public function showResetForm($token)
-    {
-        return view('auth.passwords.reset', ['token' => $token]);
-    }
-
 
     public function resetPassword(ResetPasswordRequest $request)
     {
-        $status = $this->authService->resetPassword($request->all());
+        $status = $this->authService->resetPassword($request->validated());
 
-        return $status === Password::PASSWORD_RESET
-            ? redirect()->route('login')->with('status', __($status))
-            : back()->withErrors(['email' => [__($status)]]);
+        return response()->json([
+            'message' => __($status)
+        ], $status === Password::PASSWORD_RESET ? 200 : 400);
     }
-
 
     public function confirmPassword(ConfirmPasswordRequest $request)
     {
