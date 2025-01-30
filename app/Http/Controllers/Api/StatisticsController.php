@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exports\TaskStatusExport;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ExportTaskRequest;
 use App\Services\Interfaces\StatisticsInterface;
 use Illuminate\Http\JsonResponse;
 
@@ -31,5 +33,15 @@ class StatisticsController extends Controller
     {
         $users = $this->statisticsService->getTopActiveUsers();
         return response()->json($users);
+    }
+
+    public function exportCsv(ExportTaskRequest $request, int $projectId)
+    {
+        return (new TaskStatusExport($projectId))->download('task_status.csv');
+    }
+
+    public function exportJson(ExportTaskRequest $request, int $projectId): JsonResponse
+    {
+        return (new TaskStatusExport($projectId))->exportJson();
     }
 }

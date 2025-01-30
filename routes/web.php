@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Internal\TaskController;
 use App\Http\Controllers\Internal\WebAuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,3 +23,8 @@ Route::prefix('password')->group(function () {
 
 // Horizon UI (Только для админов)
 Route::get('/horizon', '\Laravel\Horizon\Http\Controllers\HomeController@index')->middleware(['auth', 'admin']);
+
+
+Route::middleware(['auth', 'can:manage-tasks'])->group(function () {
+    Route::resource('tasks', TaskController::class);
+});

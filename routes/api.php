@@ -26,16 +26,17 @@ Route::prefix('api')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout'])->name('api.auth.logout');
 
         Route::prefix('statistics')->group(function () {
-            Route::get('/tasks-status/{projectId}', [StatisticsController::class, 'taskStatusCount']);
-            Route::get('/average-completion/{projectId}', [StatisticsController::class, 'averageCompletionTime']);
-            Route::get('/top-users', [StatisticsController::class, 'topActiveUsers']);
+            Route::get('/tasks-status/{projectId}', [TaskController::class, 'taskStatusCount']);
+            Route::get('/average-completion/{projectId}', [TaskController::class, 'averageCompletionTime']);
+            Route::get('/top-users', [TaskController::class, 'topActiveUsers']);
+
+            // 📥 Экспорт задач
+            Route::get('/tasks/export/csv/{projectId}', [TaskController::class, 'exportCsv'])->whereNumber('projectId');
+            Route::get('/tasks/export/json/{projectId}', [TaskController::class, 'exportJson'])->whereNumber('projectId');
         });
 
-        // 📥 API-экспорт задач
-        Route::get('/tasks/export/csv/{projectId}', [TaskController::class, 'exportCsv'])->whereNumber('projectId');
-        Route::get('/tasks/export/json/{projectId}', [TaskController::class, 'exportJson'])->whereNumber('projectId');
-
-        // 📌 API для задач
+        // 📌 API для проектов и задач
+        Route::apiResource('projects', ProjectController::class);
         Route::apiResource('tasks', TaskController::class);
     });
 
