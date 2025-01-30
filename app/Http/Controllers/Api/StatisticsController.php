@@ -35,9 +35,9 @@ class StatisticsController extends Controller
         return response()->json($users);
     }
 
-    public function exportCsv(ExportTaskRequest $request, int $projectId)
+    public function exportCsv(ExportTaskRequest $request, int $projectId): \Illuminate\Http\Response
     {
-        return (new TaskStatusExport($projectId))->download('task_status.csv');
+        return (new TaskStatusExport($projectId))->exportCsv();
     }
 
     public function exportJson(ExportTaskRequest $request, int $projectId): JsonResponse
