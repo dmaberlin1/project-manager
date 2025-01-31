@@ -14,22 +14,22 @@ class SendEmailJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected array $emailData;
-    protected MailInterface $mailService;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(array $emailData, MailInterface $mailService)
+    public function __construct(array $emailData)
     {
         $this->emailData = $emailData;
-        $this->mailService = $mailService;
+
     }
+
 
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle(MailInterface $mailService): void
     {
-        $this->mailService->send($this->emailData);
+        $mailService->send($this->emailData);
     }
 }

@@ -9,7 +9,7 @@ use App\Models\User;
 
 class NotificationController extends Controller
 {
-    public function sendNotifications(SendNotificationRequest $request)
+    public function sendNotifications(SendNotificationRequest $request): \Illuminate\Http\JsonResponse
     {
         $emailData = [
             'subject' => $request->subject,

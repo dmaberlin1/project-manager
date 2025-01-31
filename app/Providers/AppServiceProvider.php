@@ -11,6 +11,7 @@ use App\Services\Interfaces\WeatherMapInterface;
 use App\Services\MailService;
 use App\Services\OpenWeatherMapService;
 use App\Services\StatisticsService;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 
 
@@ -34,17 +35,17 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(StatisticsInterface::class, StatisticsService::class);
         $this->app->bind(GitHubInterface::class, GitHubService::class);
 
-        $this->app->singleton(GitHubService::class, function ($app) {
+        $this->app->singleton(GitHubService::class, function () {
             return new GitHubService(
-                config('services.github.url'),
-                config('services.github.token')
+                Config::get('services.github.url'),
+                Config::get('services.github.token')
             );
         });
 
-        $this->app->singleton(OpenWeatherMapService::class, function ($app) {
+        $this->app->singleton(OpenWeatherMapService::class, function () {
             return new OpenWeatherMapService(
-                config('services.openweather.url'),
-                config('services.openweather.api_key')
+                Config::get('services.openweather.url'),
+                Config::get('services.openweather.api_key')
             );
         });
     }
